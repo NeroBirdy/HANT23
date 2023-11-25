@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Name</title>
+    <title>Home</title>
 </head>
 <body>
+    <a href="search.html">Поиск</a>
     <script>
-        window.resizable = false;
+        window.onresize = function (){
+            if (window.outerWidth < 420 || window.outerHeight < 920){
+                window.resizeTo(420, 820);
+            }
+            else if (window.outerWidth > 420 || window.outerHeight > 920){
+                window.resizeTo(420, 820);
+            }
+        }
     </script>
 </body>
 </html>
