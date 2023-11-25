@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User</title>
+    <link rel="stylesheet" href="static/user.css">
+    <script type="text/javascript" src="eel.js"></script>
+</head>
+<body>
+    <div class="header">
+        <a href="home.html">Home</a>
+    </div>
+    <div class="re_log_area" id="re_log_area">
+        <button id="register_button">Register</button>
+        <div class="register_area" id="register_area">
+            <input type="text" placeholder="first_name" id="first_name">
+            <input type="text" placeholder="last_name" id="last_name">
+            <input type="text" placeholder="surname" id="surname">
+            <input type="text" placeholder="login" id="login">
+            <input type="text" placeholder="password" id="pass">
+            <button id="end_register">Register</button>
+        </div>
+        <button id="login_button">Login</button>
+        <div class="login_area" id="login_area">
+            <input type="text" placeholder="login" id="user_login">
+            <input type="text" placeholder="password" id="user_password">
+            <button id="end_login">Login</button>
+        </div>
+    </div>
+    <div class="user_area" id="user_area">
+        <div id="username"></div>
+    </div>
+</body>
+<script>
+    let re_log_area = document.getElementById('re_log_area');
+    let user_area = document.getElementById('user_area');
+
+
+    window.onload = async function() {
+        let is_login = await eel.checkLogin()();
+        console.log(is_login);
+        let load = setTimeout(function() {
+            if (is_login) {
+                re_log_area.style = "display: none";
+                user_area.style = "display: block";
+            }
+        }, 100);
+    }
+
+    let reg_button = document.getElementById('register_button');
+    let register_area = document.getElementById('register_area');
+    let end_reg_button = document.getElementById('end_register');
+
+    let log_button = document.getElementById('login_button');
+    let login_area = document.getElementById('login_area');
+    let end_log_button = document.getElementById('end_login');
+ 
+    reg_button.addEventListener("click", showFormReg);
+    end_reg_button.addEventListener("click", register);
+
+    log_button.addEventListener("click", showFormLog);
+    end_log_button.addEventListener("click", login);
+
+    async function showFormReg() {
+        register_area.style = "display: block";
+    }
+
+    async function showFormLog() {
+        login_area.style = "display: block";
+    }
+
+    async function register() {
+        let f_name = document.getElementById('first_name').value;
+        let l_name = document.getElementById('last_name').value;
+        let surname = document.getElementById('surname').value;
+        let login = document.getElementById('login').value;
+        let pass = document.getElementById('pass').value;
+
+        await eel.register(f_name, l_name, surname, login, pass);
+    }
+
+    async function login() {
+        let login = document.getElementById('user_login').value;
+        let pass = document.getElementById('user_password').value;
+
+        let answer =  await eel.login(login, pass)();
+        
+
+        if (answer[1]) {
+            re_log_area.style = "display: none";
+            user_area.style = "display: block";
+            document.getElementById('username').innerText = answer[0];
+        }
+    }
+</script>
+</html>

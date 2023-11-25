@@ -1,21 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="eel.js"></script>
+    <link rel="stylesheet" href="static/home.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap" rel="stylesheet">
     <title>Home</title>
 </head>
 <body>
-    <a href="search.html">Поиск</a>
-    <script>
-        window.onresize = function (){
-            if (window.outerWidth < 420 || window.outerHeight < 920){
-                window.resizeTo(420, 820);
-            }
-            else if (window.outerWidth > 420 || window.outerHeight > 920){
-                window.resizeTo(420, 820);
-            }
-        }
-    </script>
+    <div class="first_page">
+        <div class="logo_area">
+            <div class="logo"></div>
+        </div>
+        <div class="title_area">
+            <div class="title"></div>
+        </div>
+        <div class="info_area">
+            <div class="info_fon"></div>
+            <div class="info"></div>
+        </div>
+    </div>
+    <div class="block_area" id="block_area"></div>
 </body>
+<script type="text/javascript"> 
+// let deleteButton = document.getElementById('deleteButton');
+// deleteButton.addEventListener('click', deleteAllBlocks);
+window.onresize = function (){
+    if (window.outerWidth < 428 || window.outerHeight < 926){
+        window.resizeTo(428, 926);
+    }
+    else if (window.outerWidth > 428 || window.outerHeight > 926){
+        window.resizeTo(428, 926);
+    }
+}
+
+window.onload = function() {
+    for (let i = 1; i <= 5; i++) {
+        createBlock(i);
+    }
+
+    check();
+};
+
+function createBlock(blockNumber) {
+    let block_area = document.getElementById('block_area');
+
+    // Основной блок
+    let mainBlock = document.createElement('div');
+    mainBlock.id = `Block_${blockNumber}`;
+    mainBlock.className = 'Block';
+    // mainBlock.style.border = '1px solid black';
+    mainBlock.onclick = () => Block_display_full(blockNumber);
+
+    // Кнопка закрытия
+    let closeButton = document.createElement('button');
+    closeButton.id = `btn_close_${blockNumber}`;
+    closeButton.style.display = 'none';
+    closeButton.textContent = 'Close';
+    mainBlock.appendChild(closeButton);
+
+    // ну типа контент
+    let infoElement = document.createElement('p');
+    infoElement.id = `s_info_${blockNumber}`;
+    infoElement.style.textAlign = 'center';
+    mainBlock.appendChild(infoElement);
+
+    // HR
+    // let hrElement = document.createElement('hr');
+    // hrElement.id = `hr_${blockNumber}`;
+    // hrElement.style.display = 'none';
+    // mainBlock.appendChild(hrElement);
+
+    // ну типо описание
+    let descElement = document.createElement('p');
+    descElement.id = `s_desc_${blockNumber}`;
+    mainBlock.appendChild(descElement);
+
+    block_area.appendChild(mainBlock);
+
+    // Отступы
+    // let brElement1 = document.createElement('br');
+    // let brElement2 = document.createElement('br');
+    // document.body.appendChild(brElement1);
+    // document.body.appendChild(brElement2);
+}
+
+function deleteAllBlocks() {
+    let Blocks = document.querySelectorAll('.Block');
+    for (let i = 0; i < Blocks.length; i++) {
+        Blocks[i].remove();
+    }
+
+    createALLBlock();
+}
+
+function createALLBlock() {
+    for (let i = 1; i <= 5; i++) {
+        createBlock(i);
+    }
+    check();
+}
+
+async function check() {
+    for (let Block_number = 1; Block_number <= 5; Block_number++)  
+    {
+        let s_info = await eel.short_info(Block_number)();
+        let infoElement = document.querySelector("#s_info_" + Block_number);
+        infoElement.textContent = s_info;
+        infoElement.style = "font-family: Open Sans; font-weight: 800; color: #FFAC33; font-size: 17px;";
+
+        let s_desc = await eel.short_desc(Block_number)();
+        let descElement = document.querySelector("#s_desc_" + Block_number);
+        descElement.textContent = s_desc;
+        descElement.style = "font-family: Open Sans; font-weight: 800; color: #FFAC33; font-size: 17px;";
+
+        // let hrElement = document.querySelector("#hr_" + Block_number);
+        // hrElement.style.display = "block";
+    }
+}
+
+async function Block_display_full(Block_number) {
+    console.log("Меня вызвали")
+    let Block = document.querySelector("#Block_" + Block_number);
+    Block.style.position = "absolute";
+    Block.style.top = "50%";
+    Block.style.left = "50%";
+    Block.style.alignItems = "center";
+    Block.style.transform = "translate(-50%, -50%)";
+    Block.style.width = "70%";
+    Block.style.height = "50%";
+    Block.style.background = "white";
+    Block.style.zIndex = "1";
+
+    let btn_close = document.querySelector("#btn_close_" + Block_number);
+    btn_close.style.display = "block";
+    btn_close.addEventListener('click', (event) => {
+        event.stopPropagation();
+        deleteAllBlocks();
+    });
+    // btn_close.addEventListener('click', () => {
+    //     Block.hidden = true;
+    //     deleteAllBlocks();
+
+    // });
+
+    let s_info = await eel.short_info(Block_number)();
+    let infoElement = document.querySelector("#s_info_" + Block_number);
+    infoElement.textContent = s_info;
+
+    let f_desc = await eel.Block_full(Block_number)();
+    let descElement = document.querySelector("#s_desc_" + Block_number);
+    descElement.textContent = f_desc;
+}
+
+</script>
 </html>
+
+    <!-- <div id="Block_1" style="border: 1px solid black;" onclick="Block_display_full(1)">
+        <button id="btn_close_1" style="display: none;">Close</button>
+        <p id="s_info_1" style="text-align: center;"></p>
+        <hr style="display: none;" id="hr_1">
+        <p id="s_desc_1"></p>
+    </div>
+    <br><br>
+    <div id="Block_2" style="border: 1px solid black;" onclick="Block_display_full(2)">
+        <button id="btn_close_2" style="display: none;">Close</button>
+        <p id="s_info_2" style="text-align: center;"></p>
+        <hr style="display: none;" id="hr_2">
+        <p id="s_desc_2"></p>
+    </div>
+    <br><br>
+    <div id="Block_3" style="border: 1px solid black;" onclick="Block_display_full(3)">
+        <button id="btn_close_3" style="display: none;">Close</button>
+        <p id="s_info_3" style="text-align: center;"></p>
+        <hr style="display: none;" id="hr_3">
+        <p id="s_desc_3"></p>
+    </div>
+    <br><br>
+    <div id="Block_4" style="border: 1px solid black;" onclick="Block_display_full(4)">
+        <button id="btn_close_4" style="display: none;">Close</button>
+        <p id="s_info_4" style="text-align: center;"></p>
+        <hr style="display: none;" id="hr_4">
+        <p id="s_desc_4"></p>
+    </div>
+    <br><br>
+    <div id="Block_5" style="border: 1px solid black;" onclick="Block_display_full(5)">
+        <button id="btn_close_5" style="display: none;">Close</button>
+        <p id="s_info_5" style="text-align: center;"></p>
+        <hr style="display: none;" id="hr_5">
+        <p id="s_desc_5"></p>
+    </div> -->
+
+<!-- 
+ let btn_close = document.querySelector("#btn_close_" + Block_number);
+ btn_close.style.display = "block";
+ btn_close.addEventListener("click", () => {
+     document.getElementById("overlay").style.display = "none";
+     Block.style.zIndex = "3";
+     const parentBlock = btn_close.parentNode;
+     parentBlock.parentNode.removeChild(parentBlock);
+
+ });  -->
