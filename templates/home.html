@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript" src="eel.js"></script>
+    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=3ETIaLEPjwWcg8zVjZQBL7rf_tc-EaLZ_8g2HdtzE0OlyeBHqkjYmNSERVPOf9BR2mKhkWtn4qbkB6WeENEVfXUVfr42xyUEQ8P0G_kZYVOVLTwwV9hDZ7lFXsGjZHiBt6WJJJZKbxnZ5IsyXKE9HZ7lw0eEPh5jCuFQvd7N8jOZWgoTVY2BpOUAE6ihrTP1ole-NUUbgJVpEAmEwKIvyKtndpxU6RMIbEwPX1nTnjFw90eYyaCZAOANOk2Q23CjCQLbNTqAkZqUK3IhjbG0rw" charset="UTF-8"></script><script type="text/javascript" src="eel.js"></script>
     <link rel="stylesheet" href="static/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap" rel="stylesheet">
     <title>Home</title>
@@ -18,10 +18,34 @@
         </div>
         <div class="info_area">
             <div class="info_fon"></div>
-            <div class="info"></div>
+            <div class="info">
+                <p class="info_text">
+                    Приветствуем вас в приложение LAZY!<br><br>
+                    Здесь вы сможете найти ближайшие мероприятия по всей ЮГРЕ, узнать о достопримечательностях, а так же где можно пообедать.<br><br>
+                    Скорей смотри ленту или перейди в поиск и выбери интересующие категории!
+                </p>
+            </div>
         </div>
     </div>
     <div class="block_area" id="block_area"></div>
+
+    <div class="footer">
+        <div class="button_area">
+            <a href="search.html">
+                <div class="search"></div>
+            </a>
+            <a href="home.html">
+                <div class="home"></div>
+            </a>
+            <a href="map.html">
+                <div class="map"></div>
+            </a>
+            <a href="user.html">
+                <div class="account"></div>
+            </a>
+        </div>
+    </div>
+
 </body>
 <script type="text/javascript"> 
 // let deleteButton = document.getElementById('deleteButton');
@@ -36,7 +60,7 @@ window.onresize = function (){
 }
 
 window.onload = function() {
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 13; i++) {
         createBlock(i);
     }
 
@@ -50,21 +74,40 @@ function createBlock(blockNumber) {
     let mainBlock = document.createElement('div');
     mainBlock.id = `Block_${blockNumber}`;
     mainBlock.className = 'Block';
-    // mainBlock.style.border = '1px solid black';
+    mainBlock.style.border = '1px solid black';
     mainBlock.onclick = () => Block_display_full(blockNumber);
 
     // Кнопка закрытия
     let closeButton = document.createElement('button');
     closeButton.id = `btn_close_${blockNumber}`;
     closeButton.style.display = 'none';
+    closeButton.style.backgroundColor = '#FFAC33';
+    closeButton.style.border = 0;
     closeButton.textContent = 'Close';
     mainBlock.appendChild(closeButton);
 
-    // ну типа контент
-    let infoElement = document.createElement('p');
+    // Создаем новый div для оборачивания тегов p
+    let pWrapper = document.createElement('div');
+    pWrapper.id = `pWrapper_${blockNumber}`;
+    pWrapper.style.display = 'flex';
+    
+
+    // Контент
+    let infoElement = document.createElement('pre');
     infoElement.id = `s_info_${blockNumber}`;
     infoElement.style.textAlign = 'center';
-    mainBlock.appendChild(infoElement);
+    pWrapper.appendChild(infoElement);
+
+    // Описание
+    let descElement = document.createElement('p');
+    descElement.id = `s_desc_${blockNumber}`;
+    pWrapper.appendChild(descElement);
+
+    // Добавляем обертку в основной блок
+    mainBlock.appendChild(pWrapper);
+
+    block_area.appendChild(mainBlock);
+}
 
     // HR
     // let hrElement = document.createElement('hr');
@@ -72,19 +115,11 @@ function createBlock(blockNumber) {
     // hrElement.style.display = 'none';
     // mainBlock.appendChild(hrElement);
 
-    // ну типо описание
-    let descElement = document.createElement('p');
-    descElement.id = `s_desc_${blockNumber}`;
-    mainBlock.appendChild(descElement);
-
-    block_area.appendChild(mainBlock);
-
     // Отступы
     // let brElement1 = document.createElement('br');
     // let brElement2 = document.createElement('br');
     // document.body.appendChild(brElement1);
     // document.body.appendChild(brElement2);
-}
 
 function deleteAllBlocks() {
     let Blocks = document.querySelectorAll('.Block');
@@ -96,24 +131,24 @@ function deleteAllBlocks() {
 }
 
 function createALLBlock() {
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 13; i++) {
         createBlock(i);
     }
     check();
 }
 
 async function check() {
-    for (let Block_number = 1; Block_number <= 5; Block_number++)  
+    for (let Block_number = 1; Block_number <= 13; Block_number++)  
     {
         let s_info = await eel.short_info(Block_number)();
         let infoElement = document.querySelector("#s_info_" + Block_number);
-        infoElement.textContent = s_info;
-        infoElement.style = "font-family: Open Sans; font-weight: 800; color: #FFAC33; font-size: 17px;";
+        infoElement.textContent = s_info + ",";
+        infoElement.style = "font-family: Open Sans; font-weight: 800; color: #FFAC33; font-size: 15px;";
 
         let s_desc = await eel.short_desc(Block_number)();
         let descElement = document.querySelector("#s_desc_" + Block_number);
         descElement.textContent = s_desc;
-        descElement.style = "font-family: Open Sans; font-weight: 800; color: #FFAC33; font-size: 17px;";
+        descElement.style = "font-family: Open Sans; font-weight: 800; color: #FFAC33; font-size: 15px;";
 
         // let hrElement = document.querySelector("#hr_" + Block_number);
         // hrElement.style.display = "block";
@@ -124,14 +159,21 @@ async function Block_display_full(Block_number) {
     console.log("Меня вызвали")
     let Block = document.querySelector("#Block_" + Block_number);
     Block.style.position = "absolute";
-    Block.style.top = "50%";
+    Block.style.top = "180%";
     Block.style.left = "50%";
     Block.style.alignItems = "center";
     Block.style.transform = "translate(-50%, -50%)";
-    Block.style.width = "70%";
-    Block.style.height = "50%";
-    Block.style.background = "white";
-    Block.style.zIndex = "1";
+    Block.style.width = "95%";
+    Block.style.height = "40%";
+    Block.style.backgroundImage = "url(static/img/post" + Block_number + "_" + 2 + ".jpg)";
+    Block.style.border = "1px solid black";
+    
+    let Pw = document.querySelector("#pWrapper_" + Block_number);
+    Pw.style.display = "flex";
+    Pw.style.alignItems = 'flex-start';
+    Pw.style.justifyContent = 'flex-start';
+    Pw.style.flexDirection = 'column';
+
 
     let btn_close = document.querySelector("#btn_close_" + Block_number);
     btn_close.style.display = "block";
@@ -147,50 +189,21 @@ async function Block_display_full(Block_number) {
 
     let s_info = await eel.short_info(Block_number)();
     let infoElement = document.querySelector("#s_info_" + Block_number);
+    // infoElement.style.display = "flex";
+    // infoElement.style.alignItems = "flex-start";
     infoElement.textContent = s_info;
+
 
     let f_desc = await eel.Block_full(Block_number)();
     let descElement = document.querySelector("#s_desc_" + Block_number);
+    // descElement.style.display = "flex";
+    // descElement.style.alignItems = "flex-start";
     descElement.textContent = f_desc;
+
 }
 
 </script>
 </html>
-
-    <!-- <div id="Block_1" style="border: 1px solid black;" onclick="Block_display_full(1)">
-        <button id="btn_close_1" style="display: none;">Close</button>
-        <p id="s_info_1" style="text-align: center;"></p>
-        <hr style="display: none;" id="hr_1">
-        <p id="s_desc_1"></p>
-    </div>
-    <br><br>
-    <div id="Block_2" style="border: 1px solid black;" onclick="Block_display_full(2)">
-        <button id="btn_close_2" style="display: none;">Close</button>
-        <p id="s_info_2" style="text-align: center;"></p>
-        <hr style="display: none;" id="hr_2">
-        <p id="s_desc_2"></p>
-    </div>
-    <br><br>
-    <div id="Block_3" style="border: 1px solid black;" onclick="Block_display_full(3)">
-        <button id="btn_close_3" style="display: none;">Close</button>
-        <p id="s_info_3" style="text-align: center;"></p>
-        <hr style="display: none;" id="hr_3">
-        <p id="s_desc_3"></p>
-    </div>
-    <br><br>
-    <div id="Block_4" style="border: 1px solid black;" onclick="Block_display_full(4)">
-        <button id="btn_close_4" style="display: none;">Close</button>
-        <p id="s_info_4" style="text-align: center;"></p>
-        <hr style="display: none;" id="hr_4">
-        <p id="s_desc_4"></p>
-    </div>
-    <br><br>
-    <div id="Block_5" style="border: 1px solid black;" onclick="Block_display_full(5)">
-        <button id="btn_close_5" style="display: none;">Close</button>
-        <p id="s_info_5" style="text-align: center;"></p>
-        <hr style="display: none;" id="hr_5">
-        <p id="s_desc_5"></p>
-    </div> -->
 
 <!-- 
  let btn_close = document.querySelector("#btn_close_" + Block_number);

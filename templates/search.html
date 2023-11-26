@@ -4,9 +4,331 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="eel.js"></script>
+    <link rel="stylesheet" href="static/search.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap" rel="stylesheet">
     <title>Search</title>
 </head>
 <body>
-    
+    <button id = "3">Фильтр</button>
+    <div class="filterarea" style = "display: flex; flex-direction: column; width: 100px;">
+        <button id = "4" class = "btnfilter" style = "display: flex;">Город</button>
+        <div class="city, filtdiv"></div>
+        <button id = "5" class = "btnfilter" style = "display: flex;" >Категория</button>
+        <div class="category, filtdiv"></div>
+        <button id = "6" class = "btnfilter" style = "display: flex;">Дата</button>
+        <div class="date, filtdiv"></div>
+        <button id = "7" class = "btnfilter" style = "display: flex;">Возраст</button>
+        <div class="age, filtdiv"></div>
+        <button id = "8" class = "btnfilter" style = "display: flex;">Тип</button>
+        <div class="type, filtdiv"></div>
+    </div>
+    <input type="text" id = "inputarea">
+    <button id = "search">Поиск</button>
+
+    <div id = "upfooter"style="min-height: 90vh;"></div>
+
+    <div class="footer">
+        <div class="button_area">
+            <a href="search.html">
+                <div class="search"></div>
+            </a>
+            <a href="home.html">
+                <div class="home"></div>
+            </a>
+            <a href="map.html">
+                <div class="map"></div>
+            </a>
+            <a href="user.html">
+                <div class="account"></div>
+            </a>
+        </div>
+    </div>
+
+
 </body>
+<script type="text/javascript">
+    window.onresize = function (){
+    if (window.outerWidth < 428 || window.outerHeight < 926){
+        window.resizeTo(428, 926);
+    }
+    else if (window.outerWidth > 428 || window.outerHeight > 926){
+        window.resizeTo(428, 926);
+    }
+    }
+    
+    let pushBlock = document.getElementById("upfooter");
+
+
+
+    let divs = document.getElementsByClassName('filtdiv');
+    for(i of divs)
+    {
+        i.style.display = "none";
+    }
+    let btns = document.getElementsByClassName('btnfilter');
+    for(let i = 0; i < btns.length; i++)
+    {
+        
+        btns[i].addEventListener('click', function(){
+            if (divs[i].style.display == "flex")
+            {
+                divs[i].style.display = "none";
+            }
+            else{
+                divs[i].style.display = "flex";
+            }
+        })
+
+    }
+
+
+    let filt = document.getElementsByClassName("filterarea")[0];
+    filt.style.display = "none";
+
+    let filter=[[],[],[],[],[]];
+    let filtBtn = document.getElementById("3");
+    filtBtn.addEventListener('click',function(){
+        if (filt.style.display == "flex")
+        {
+            filt.style.display = "none"
+        }
+        else
+        {
+            filt.style.display = "flex";
+        }
+    })
+
+    let filtchilds1 = filt.children;
+    let filtchilds = [];
+    for (let i in filtchilds1)
+    {
+        if (i%2 != 0)
+            filtchilds.push(filtchilds1[i]);
+    }
+
+    let btn = document.getElementById("search");
+    let inp = document.getElementById("inputarea");
+    btn.addEventListener('click', search);
+
+    create();
+
+    async function search()
+    {
+        text = inp.value;
+        // console.log(text)
+        arr1 = await eel.filter(filter[0],filter[1],filter[2],filter[3],filter[4])();
+        arr = arr1[0];
+        console.log(arr)
+        let filtered;
+        if (text != "")
+            {
+                filtered = arr.filter(subArr => subArr.some(item => {
+                    if (typeof item === 'string') {
+                        return item.includes(text);
+                    }
+                    return false;
+                }));
+            }
+        else{
+            filtered = arr;
+        }
+        
+        Create_block_arr(filtered);
+
+        console.log(filtered);
+    }
+
+    async function create()
+    {
+
+        let city = await eel.select("city")();
+        let category = await eel.select("category")();
+        let date = await eel.select("date")();
+        let age = await eel.select("age")();
+        let type = await eel.select("type")();
+        let checkboxes = [];
+        let atttr = [city,category,date,age,type];
+
+        for(let i = 0; i < 5; i++)
+        {
+            for(let j = 0; j < atttr[i].length; j++)
+            {
+                let div = document.createElement("div");
+                div.classList.add('choose');
+                let check = document.createElement("input");
+                div.appendChild(check);
+                check.type = "checkbox";
+                checkboxes.push({box: check,text: atttr[i][j], arr: i});
+                let el = document.createElement("p");
+                let letter = atttr[i][j][0].toUpperCase();
+                atttr[i][j] = atttr[i][j].slice(1);
+                el.innerText = letter + atttr[i][j];
+                div.appendChild(el);
+
+                filtchilds[i].appendChild(div);
+            }
+        }
+        for (let i of checkboxes)
+        {
+            i.box.addEventListener('change', function(){
+                if (i.box.checked)
+                {
+                    filter[i.arr].push(i.text);
+                }
+                else{
+                    filter[i.arr] = filter[i.arr].filter(item => item !== i.text);
+                }
+            })
+        }
+        //console.log(atttr)
+    }
+
+    async function select(attr)
+    {
+        let arr = await eel.select(attr)();
+        return arr;
+  }
+
+  function createBlock(blockNumber,arr) {
+    // Основной блок
+    let mainBlock = document.createElement('div');
+    mainBlock.id = `Block_${blockNumber}`;
+    mainBlock.className = 'Block';
+    mainBlock.style.border = '1px solid black';
+    mainBlock.onclick = () => Block_display_full(blockNumber,arr);
+
+    // Кнопка закрытия
+    let closeButton = document.createElement('button');
+    closeButton.id = `btn_close_${blockNumber}`;
+    closeButton.style.display = 'none';
+    closeButton.textContent = 'Close';
+    mainBlock.appendChild(closeButton);
+
+    // Создаем новый div для оборачивания тегов p
+    let pWrapper = document.createElement('div');
+    pWrapper.id = `pWrapper_${blockNumber}`;
+    pWrapper.style.display = 'flex';
+
+    // ну типа контент
+    let infoElement = document.createElement('pre');
+    infoElement.id = `s_info_${blockNumber}`;
+    infoElement.style.textAlign = 'center';
+    mainBlock.appendChild(infoElement);
+
+    // ну типо описание
+    let descElement = document.createElement('p');
+    descElement.id = `s_desc_${blockNumber}`;
+    mainBlock.appendChild(descElement);
+
+    // Добавляем обертку в основной блок
+    mainBlock.appendChild(pWrapper);
+    mainBlock.style = "background-image: url('static/img/post" + Math.ceil(Math.random() * 13) + ".jpg')"
+    pushBlock.appendChild(mainBlock);
+}
+
+
+  function Create_block_arr(cout_block) {
+    deleteAllBlocksStart();
+    for (let i = 0; i < cout_block.length; i++) {
+        createBlock(i,cout_block);
+    }
+
+    check(cout_block);
+  }
+
+  async function check(Block_number1) {
+    for (let Block_number = 0; Block_number < Block_number1.length; Block_number++)  
+    {
+        let s_info = getUpper(Block_number1[Block_number][0]) + "\n" + getUpper(Block_number1[Block_number][5]) + "\n" + getUpper(Block_number1[Block_number][9]);
+        let infoElement = document.querySelector("#s_info_" + Block_number);
+        infoElement.textContent = s_info + ",";
+        infoElement.style = "font-family: Open Sans; font-weight: 500; color: #FFAC33; font-size: 17px;";
+
+        let s_desc = getUpper(Block_number1[Block_number][2]);
+        // let s_desc = "test";
+        let descElement = document.querySelector("#s_desc_" + Block_number);
+        descElement.textContent = s_desc;
+        descElement.style = "font-family: Open Sans; font-weight: 500; color: #FFAC33; font-size: 17px;";
+
+    }
+}
+
+function deleteAllBlocks(arr) {
+    let Blocks = document.querySelectorAll('.Block');
+    for (let i = 0; i < Blocks.length; i++) {
+        Blocks[i].remove();
+    }
+
+    let Breaks = document.querySelectorAll('br');
+    for (let i = 0; i < Breaks.length; i++) {
+        Breaks[i].remove();
+    }
+    createALLBlock(arr);
+}
+
+function deleteAllBlocksStart() {
+    let Blocks = document.querySelectorAll('.Block');
+    for (let i = 0; i < Blocks.length; i++) {
+        Blocks[i].remove();
+    }
+
+    let Breaks = document.querySelectorAll('br');
+    for (let i = 0; i < Breaks.length; i++) {
+        Breaks[i].remove();
+    }
+}
+
+function createALLBlock(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        createBlock(i,arr);
+    }
+    check(arr);
+}
+
+async function Block_display_full(Block_number,arr) {
+    console.log("Меня вызвали")
+    let Block = document.querySelector("#Block_" + Block_number);
+    Block.style.position = "absolute";
+    Block.style.top = "90%";
+    Block.style.left = "50%";
+    Block.style.alignItems = "center";
+    Block.style.transform = "translate(-50%, -50%)";
+    Block.style.width = "95%";
+    Block.style.height = "40%";
+    // Block.style.backgroundImage = "url('static/img/post" + Math.ceil(Math.random() * 13) +  "_" + 2 + ".jpg";
+    Block.style.backgroundImage = "url('static/img/post" + Math.ceil(Math.random() * 13) +  "_" + 2 + ".jpg')"
+    Block.style.border = "1px solid black";
+
+    let Pw = document.querySelector("#pWrapper_" + Block_number);
+    Pw.style.display = "flex";
+    Pw.style.alignItems = 'flex-start';
+    Pw.style.justifyContent = 'flex-start';
+    Pw.style.flexDirection = 'column';
+
+    let btn_close = document.querySelector("#btn_close_" + Block_number);
+    btn_close.style.display = "block";
+    btn_close.addEventListener('click', (event) => {
+        event.stopPropagation();
+        deleteAllBlocks(arr);
+    });
+
+    // console.log(Block_number)
+    let s_info = getUpper(arr[Block_number][0]) + "\n" + getUpper(arr[Block_number][5]) + "\n" + getUpper(arr[Block_number][9]);
+    let infoElement = document.querySelector("#s_info_" + Block_number);
+    infoElement.textContent = s_info;
+
+    //1 3 4 6 7 8
+    let f_desc = getUpper(arr[Block_number][1]) + "\n" + getUpper(arr[Block_number][3]) + "\n" + getUpper(arr[Block_number][4]) + "\n" + getUpper(arr[Block_number][6]) + "\n" + getUpper(arr[Block_number][7]) + "\n" + getUpper(arr[Block_number][8]);
+    let descElement = document.querySelector("#s_desc_" + Block_number);
+    descElement.textContent = f_desc;
+}
+
+function getUpper(word)
+{
+    let letter = word[0].toUpperCase();
+    word = word.slice(1);
+    return letter + word;
+}
+
+</script>
 </html>

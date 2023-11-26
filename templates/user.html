@@ -5,41 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User</title>
     <link rel="stylesheet" href="static/user.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap" rel="stylesheet">
     <script type="text/javascript" src="eel.js"></script>
 </head>
 <body>
-    <div class="header">
-        <a href="home.html">Home</a>
-    </div>
     <div class="re_log_area" id="re_log_area">
-        <button id="register_button">Register</button>
-        <div class="register_area" id="register_area">
-            <input type="text" placeholder="first_name" id="first_name">
-            <input type="text" placeholder="last_name" id="last_name">
-            <input type="text" placeholder="surname" id="surname">
-            <input type="text" placeholder="login" id="login">
-            <input type="text" placeholder="password" id="pass">
-            <button id="end_register">Register</button>
+        <div class="area">
+            <div class="container">
+                <div class="main_btn">
+                    <button id="register_button">Register</button>
+                    <div class="register_area" id="register_area">
+                        <input type="text" placeholder="Ваше имя" id="first_name">
+                        <input type="text" placeholder="Ваша фамилия" id="last_name">
+                        <input type="text" placeholder="Ваше отчество" id="surname">
+                        <input type="text" placeholder="Ваш логин" id="login">
+                        <input type="text" placeholder="Ваш пароль" id="pass">
+                        <button id="end_register">Register</button>
+                    </div>
+                    <button id="login_button">Login</button>
+                    <div class="login_area" id="login_area">
+                        <input type="text" placeholder="login" id="user_login">
+                        <input type="password" placeholder="password" id="user_password">
+                        <button id="end_login">Login</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button id="login_button">Login</button>
-        <div class="login_area" id="login_area">
-            <input type="text" placeholder="login" id="user_login">
-            <input type="text" placeholder="password" id="user_password">
-            <button id="end_login">Login</button>
+        <div class="footer">
+            <div class="button_area">
+                <a href="search.html">
+                    <div class="search"></div>
+                </a>
+                <a href="home.html">
+                    <div class="home"></div>
+                </a>
+                <a href="map.html">
+                    <div class="map"></div>
+                </a>
+                <a href="user.html">
+                    <div class="account"></div>
+                </a>
+            </div>
         </div>
     </div>
     <div class="user_area" id="user_area">
-        <div id="username"></div>
+        <div class="header">
+            <div class="username_area">
+                <div class="username" id="username"></div>
+            </div>
+            <div class="setings_area">
+                <div class="setings_icon"></div>
+            </div>
+        </div>
+        <div class="main">
+            <div class="first_part">
+                <div class="photo_area">
+                    <div class="photo"></div>
+                </div>
+                <div class="main_info_area">
+                    <div class="info_text" id="f_name"></div>
+                    <div class="info_text" id="l_name"></div>
+                    <div class="info_text" id="surname"></div>
+                </div>
+            </div>
+            <div class="second_part">
+                <div class="description">Инфо: Вы можете написать информацию о себе</div>
+            </div>
+            <div class="third_part">
+                <div class="btn">
+                    <div class="img_area">
+                        <div class="img_folow"></div>
+                    </div>
+                    <div class="text_area">
+                        <div class="btn_text">Избранное</div>
+                    </div>
+                </div>
+                <div class="btn">
+                    <div class="img_area">
+                        <div class="img_complete"></div>
+                    </div>
+                    <div class="text_area">
+                        <div class="btn_text">Посещенные мероприятия</div>
+                    </div>
+                </div>
+                <div class="btn">
+                    <div class="img_area">
+                        <div class="img_pay"></div>
+                    </div>
+                    <div class="text_area">
+                        <div class="btn_text">Способы оплаты</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="button_area">
+                <a href="search.html">
+                    <div class="search"></div>
+                </a>
+                <a href="home.html">
+                    <div class="home"></div>
+                </a>
+                <a href="map.html">
+                    <div class="map"></div>
+                </a>
+                <a href="user.html">
+                    <div class="account"></div>
+                </a>
+            </div>
+        </div>
     </div>
 </body>
 <script>
+    window.onresize = function (){
+    if (window.outerWidth < 428 || window.outerHeight < 926){
+        window.resizeTo(428, 926);
+    }
+    else if (window.outerWidth > 428 || window.outerHeight > 926){
+        window.resizeTo(428, 926);
+    }
+    }
+
     let re_log_area = document.getElementById('re_log_area');
     let user_area = document.getElementById('user_area');
 
 
     window.onload = async function() {
         let is_login = await eel.checkLogin()();
-        console.log(is_login);
+        // console.log(is_login);
         let load = setTimeout(function() {
             if (is_login) {
                 re_log_area.style = "display: none";
@@ -64,10 +157,12 @@
 
     async function showFormReg() {
         register_area.style = "display: block";
+        login_area.style = "display: none";
     }
 
     async function showFormLog() {
         login_area.style = "display: block";
+        register_area.style = "display: none";
     }
 
     async function register() {
@@ -86,11 +181,13 @@
 
         let answer =  await eel.login(login, pass)();
         
-
-        if (answer[1]) {
+        if (answer[answer.length - 1]) {
             re_log_area.style = "display: none";
             user_area.style = "display: block";
-            document.getElementById('username').innerText = answer[0];
+            document.getElementById('f_name').innerText = answer[0][0];
+            document.getElementById('l_name').innerText = answer[0][1];
+            document.getElementById('surname').innerText = answer[0][2];
+            document.getElementById('username').innerText = answer[0][3];
         }
     }
 </script>
